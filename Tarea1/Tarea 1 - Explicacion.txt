@@ -1,0 +1,7 @@
+
+En este proyecto se llevan a cabo la creacion de un 
+arbol binario al cual se le insertan nodos, cuenta
+con las funciones de verificar si el arbol esta vacio,
+y de ordenar los nodos en orden del menor al mayor asi
+como buscar si un nodo especifico se encuentra dentro
+del arbol
