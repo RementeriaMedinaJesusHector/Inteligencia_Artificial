@@ -1,0 +1,130 @@
+<div class="notebook">
+
+<div class="nb-cell program" name="p1">
+personaje(jonathan, humano, hombre, ley).
+personaje(nozomi,humano,mujer,ley).
+personaje(flynn, humano, hombre, neutral).
+personaje(issabeu, humano,mujer,neutral).
+personaje(walter, humano, hombre, caos).
+
+personaje(satan,demonio,hombre,ley).
+personaje(mothman, demonio, hombre, neutral).
+personaje(yaskini, demonio, mujer, neutral).
+personaje(demi_fiend, demonio, hombre, caos).
+personaje(lilith,demonio,mujer,caos).
+
+personaje(ace_frost, hada, hombre, ley).
+personaje(jack_frost, hada, hombre, neutral).
+personaje(pixie, hada, mujer, neutral).
+personaje(black_frost, hada, hombre, caos).
+
+personaje(nahobino, dios, hombre, ley).
+personaje(amaterasu, dios, mujer, ley).
+personaje(osiris, dios, hombre, neutral).
+personaje(loki, dios, hombre, caos).
+
+pregunta_Raza(Raza) :-
+    format("¿Tu personaje es humano? (y/n) "), read(Respuesta),
+    ((Respuesta == y ; Respuesta == n) -&gt; 
+        (Respuesta == y -&gt; Raza = humano;
+            (Respuesta == n -&gt; 
+                format("¿Tu personaje es un demonio? (y/n) "), read(Respuesta1),
+                ((Respuesta1 == y ; Respuesta1 == n) -&gt; 
+                    (Respuesta1 == y -&gt; Raza = demonio;
+                        (Respuesta1 == n -&gt; 
+                            format("¿Tu personaje es un hada? (y/n) "), read(Respuesta2),
+                            ((Respuesta2 == y ; Respuesta2 == n) -&gt; 
+                                (Respuesta2 == y -&gt; Raza = hada;
+                                    (Respuesta2 == n -&gt; Raza = dios)
+                                );
+                                pregunta_Raza(Raza)
+                            )
+                        )
+                    );
+                    pregunta_Raza(Raza)
+                )
+            )
+        )
+    ;
+        pregunta_Raza(Raza)
+    ).
+
+pregunta_Genero(Genero) :- 
+    format("¿Es tu personaje hombre? (y/n) "), read(Respuesta),
+    ((Respuesta == y ; Respuesta == n) -&gt; 
+        (Respuesta == y -&gt; Genero = hombre; 
+            (Respuesta == n -&gt; Genero = mujer)
+        );
+        pregunta_Genero(Genero)
+    ).
+
+pregunta_Alineacion(Alineacion) :-
+    format("¿Tu personaje es alineación ley? (y/n) "), read(Respuesta),
+    ((Respuesta == y ; Respuesta == n) -&gt; 
+        (Respuesta == y -&gt; Alineacion = ley;
+            (Respuesta == n -&gt; 
+                format("¿Tu personaje es alineación neutral? (y/n) "), read(Respuesta1),
+                ((Respuesta1 == y ; Respuesta1 == n) -&gt; 
+                    (Respuesta1 == y -&gt; Alineacion = neutral;
+                        (Respuesta1 == n -&gt; Alineacion = caos)
+                    );
+                    pregunta_Alineacion(Alineacion)
+                )
+            )
+        )
+    ;
+        pregunta_Alineacion(Alineacion)
+    ).
+
+%El programa siempre corre 2 veces incluso sin esto asi que tienes
+%que decirle que no quieres volver a jugar 2 veces para salir%
+
+preguntar_otra_vez :-
+    write("¿Quieres volver a jugar? (y/n) "),
+    read(Respuesta),
+    ((Respuesta == 'y' ; Respuesta == 'n') -&gt; 
+        (Respuesta == 'y' -&gt; jugar;
+            (Respuesta == 'n' -&gt; 
+                write("Gracias por jugar conmigo"), nl
+            )
+        );
+        preguntar_otra_vez
+    ).
+
+% Juego
+jugar :-
+    pregunta_Raza(Raza),
+    pregunta_Genero(Genero),
+    pregunta_Alineacion(Alineacion),
+    findall(Nombre, personaje(Nombre, Raza, Genero, Alineacion), Coincidencias),
+    mostrar_Coincidencias(Coincidencias),
+    preguntar_otra_vez.
+
+mostrar_Coincidencias([]) :-
+    format("Me rindo, ¿Es tu personaje alguien más? (y/n) "), read(Respuesta),
+    ((Respuesta == y ; Respuesta == n) -&gt; 
+        (Respuesta == y -&gt; jugar;
+            (Respuesta == n -&gt; true)
+        );
+        mostrar_Coincidencias([])
+    ).
+
+mostrar_Coincidencias([Nombre|Resto]) :-
+    format("Tu personaje podría ser ~w. ¿Es correcto? (y/n) ", [Nombre]),
+    read(Respuesta),
+    ((Respuesta == y ; Respuesta == n) -&gt; 
+        (Respuesta == y -&gt; format("¡Felicidades! Tu personaje es ~w.~n", [Nombre]);
+            (Respuesta == n -&gt; mostrar_Coincidencias(Resto))
+        );
+        mostrar_Coincidencias([Nombre|Resto])
+    ).
+
+% Start the game
+:- initialization(jugar).
+</div>
+
+<div class="nb-cell query" name="q1">
+jugar
+</div>
+
+</div>
