@@ -1,0 +1,123 @@
+<div class="notebook">
+
+<div class="nb-cell program" name="p1">
+%Sintomas
+sintoma(fiebre).
+sintoma(dificultad_respirar).
+sintoma(fatiga).
+sintoma(perdida_olfato).
+sintoma(sudores_nocturnos).
+sintoma(dolor_muscular).
+sintoma(dolor_garganta).
+sintoma(congestion_nasal).
+sintoma(sibilancias).
+sintoma(tos_flema).
+sintoma(dolor_pecho).
+sintoma(estornudos).
+sintoma(mareo).
+sintoma(voz_ronca).
+
+%Enfermedades
+
+sintoma_enfermedad('COVID-19', fiebre).
+sintoma_enfermedad('COVID-19', dificultad_respirar).
+sintoma_enfermedad('COVID-19', fatiga).
+sintoma_enfermedad('COVID-19', perdida_olfato).
+sintoma_enfermedad('COVID-19', dolor_muscular).
+sintoma_enfermedad('COVID-19', mareo).
+sintoma_enfermedad('COVID-19', dolor_garganta).
+
+sintoma_enfermedad('Neumonía', fiebre).
+sintoma_enfermedad('Neumonía', dificultad_respirar).
+sintoma_enfermedad('Neumonía', fatiga).
+sintoma_enfermedad('Neumonía', dolor_pecho).
+sintoma_enfermedad('Neumonía', tos_flema).
+sintoma_enfermedad('Neumonía', sudores_nocturnos).
+
+sintoma_enfermedad('Tuberculosis', fiebre).
+sintoma_enfermedad('Tuberculosis', dificultad_respirar).
+sintoma_enfermedad('Tuberculosis', sudores_nocturnos).
+sintoma_enfermedad('Tuberculosis', fatiga).
+sintoma_enfermedad('Tuberculosis', dolor_pecho).
+sintoma_enfermedad('Tuberculosis', tos_flema).
+
+sintoma_enfermedad('Gripe', fiebre).
+sintoma_enfermedad('Gripe', dolor_muscular).
+sintoma_enfermedad('Gripe', fatiga).
+sintoma_enfermedad('Gripe', dolor_garganta).
+sintoma_enfermedad('Gripe', mareo).
+
+sintoma_enfermedad('Resfriado común', dolor_garganta).
+sintoma_enfermedad('Resfriado común', congestion_nasal).
+sintoma_enfermedad('Resfriado común', estornudos).
+sintoma_enfermedad('Resfriado común', fatiga).
+
+sintoma_enfermedad('Asma', sibilancias).
+sintoma_enfermedad('Asma', dificultad_respirar).
+sintoma_enfermedad('Asma', tos_flema).
+sintoma_enfermedad('Asma', dolor_pecho).
+
+sintoma_enfermedad('Bronquitis', tos_flema).
+sintoma_enfermedad('Bronquitis', dolor_garganta).
+sintoma_enfermedad('Bronquitis', dolor_pecho).
+sintoma_enfermedad('Bronquitis', fatiga).
+
+sintoma_enfermedad('Faringitis', dolor_garganta).
+sintoma_enfermedad('Faringitis', fiebre).
+sintoma_enfermedad('Faringitis', voz_ronca).
+sintoma_enfermedad('Faringitis', fatiga).
+
+sintoma_enfermedad('Laringitis', voz_ronca).
+sintoma_enfermedad('Laringitis', dolor_garganta).
+sintoma_enfermedad('Laringitis', fiebre).
+sintoma_enfermedad('Laringitis', mareo).
+
+sintoma_enfermedad('Sinusitis', dolor_garganta).
+sintoma_enfermedad('Sinusitis', congestion_nasal).
+sintoma_enfermedad('Sinusitis', fiebre).
+sintoma_enfermedad('Sinusitis', estornudos).
+
+% Intersección de síntomas
+interseccion([], _, []).
+interseccion([H|T], L, [H|R]) :- member(H, L), interseccion(T, L, R).
+interseccion([_|T], L, R) :- interseccion(T, L, R).
+
+% Probabilidad de una enfermedad
+probabilidad_enfermedad(Enfermedad, SintomasUsuario, Probabilidad) :-
+    findall(S, sintoma_enfermedad(Enfermedad, S), SintomasEnfermedad),
+    interseccion(SintomasUsuario, SintomasEnfermedad, Coinciden),
+    length(Coinciden, N),
+    length(SintomasEnfermedad, Total),
+    Total &gt; 0,
+    Probabilidad is (N / Total) * 100.
+
+% Preguntar síntomas al usuario
+preguntar_sintoma(S) :-
+    format('¿Tienes ~w? (si/no): ', [S]),
+    read(Resp),
+    Resp == si.
+
+recopilar_sintomas([], []).
+recopilar_sintomas([S|Resto], [S|Res]) :- preguntar_sintoma(S), recopilar_sintomas(Resto, Res).
+recopilar_sintomas([_|Resto], Res) :- recopilar_sintomas(Resto, Res).
+
+% Consulta de probabilidades
+consulta_probabilidad :-
+    findall(S, sintoma(S), Lista),
+    recopilar_sintomas(Lista, SintomasUsuario),
+    findall(E, sintoma_enfermedad(E, _), Todas),
+    list_to_set(Todas, Enfermedades),
+    forall(member(E, Enfermedades),
+        (probabilidad_enfermedad(E, SintomasUsuario, P),
+         format('Probabilidad de ~w: ~2f%~n', [E, P]))).
+
+% Ejemplo de uso
+consulta :- 
+    consulta_probabilidad.
+</div>
+
+<div class="nb-cell query" name="q1">
+consulta
+</div>
+
+</div>
